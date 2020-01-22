@@ -92,6 +92,15 @@ async function up(force)
 async function customize(name)
 {
     console.log(chalk.keyword('pink')(`Running VM customizations...`));
+
+    // Add a NIC with NAT networking
+    await VBoxManage.execute("modifyvm", `${name} --nic2 nat`);
+
+    // Add a port forward from 2800 => 22 for guestssh
+    await VBoxManage.execute("modifyvm", `${name} --natpf1 "guestssh,tcp,127.0.0.1,2800,,22"`);
+
+    // Add a port forward from 8080 => 9000 for a node application
+    await VBoxManage.execute("modifyvm", `${name} --natpf1 "node,tcp,127.0.0.1,8080,,9000"`);
 }
 
 async function postconfiguration(name)
