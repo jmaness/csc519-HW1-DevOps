@@ -103,6 +103,8 @@ async function customize(name)
     // Add a port forward from 8080 => 9000 for a node application
     await VBoxManage.execute("modifyvm", `${name} --natpf1 "node,tcp,,8080,,9000"`);
 
+    // Add a NIC with bridged networking
+    await VBoxManage.execute("modifyvm", `${name} --nic2 bridged --nictype2 virtio --bridgeadapter2 wlp2s0`);
 }
 
 async function postconfiguration(name)
@@ -110,6 +112,9 @@ async function postconfiguration(name)
     console.log(chalk.keyword('pink')(`Running post-configurations...`));
      
     ssh("\"sudo apt-get update && sudo apt-get install -y nodejs npm git && git clone https://github.com/CSC-DevOps/App.git && cd App && npm install\"");
+
+    // Bring up nic2
+    ssh("sudo ip link set enp0s8 up");
 }
 
 // Helper utility to wait.
