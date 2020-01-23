@@ -94,20 +94,22 @@ async function customize(name)
     console.log(chalk.keyword('pink')(`Running VM customizations...`));
 
     // Add a NIC with NAT networking
-    await VBoxManage.execute("modifyvm", `${name} --nic2 nat`);
+    await VBoxManage.execute("modifyvm", `${name} --nic1 nat`);
+    await VBoxManage.execute("modifyvm", `${name} --nictype1 virtio`);
 
     // Add a port forward from 2800 => 22 for guestssh
-    await VBoxManage.execute("modifyvm", `${name} --natpf1 "guestssh,tcp,127.0.0.1,2800,,22"`);
+    await VBoxManage.execute("modifyvm", `${name} --natpf1 "guestssh,tcp,,2800,,22"`);
 
     // Add a port forward from 8080 => 9000 for a node application
-    await VBoxManage.execute("modifyvm", `${name} --natpf1 "node,tcp,127.0.0.1,8080,,9000"`);
+    await VBoxManage.execute("modifyvm", `${name} --natpf1 "node,tcp,,8080,,9000"`);
+
 }
 
 async function postconfiguration(name)
 {
     console.log(chalk.keyword('pink')(`Running post-configurations...`));
      
-    ssh("ls /");
+    ssh("\"sudo apt-get update && sudo apt-get install -y nodejs npm git && git clone https://github.com/CSC-DevOps/App.git && cd App && npm install\"");
 }
 
 // Helper utility to wait.
