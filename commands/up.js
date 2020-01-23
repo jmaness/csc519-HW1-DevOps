@@ -15,23 +15,30 @@ exports.builder = yargs => {
             describe: 'Force the old VM to be deleted when provisioning',
             default: false,
             type: 'boolean'
+        },
+        bridgeadapter: {
+            alias: 'b',
+            describe: 'Name of adapter for a NIC with bridged networking',
+            type: 'string'
+        },
+        sharedfolder: {
+            alias: 's',
+            describe: 'Shared folder path to automount in VM',
+            type: 'string'
         }
     });
 };
 
 
 exports.handler = async argv => {
-    const { force } = argv;
+    const { force, bridgeadapter, sharedfolder } = argv;
 
     (async () => {
-    
-        await up(force);
-
+        await up(force, bridgeadapter, sharedfolder);
     })();
-
 };
 
-async function up(force)
+async function up(force, bridgeAdapter, sharedFolder)
 {
     // Use current working directory to derive name of virtual machine
     let cwd = process.cwd().replace(/[/]/g,"-").replace(/\\/g,"-");
@@ -70,7 +77,7 @@ async function up(force)
     await VBoxManage.execute("modifyvm", `${name}  --uart1 0x3f8 4 --uartmode1 disconnected`);
 
     // Run your specific customizations for the Virtual Machine.
-    await customize(name);
+    await customize(name, bridgeAdapter, sharedFolder);
 
     // Start the VM.
     // Unlock any session.
@@ -89,7 +96,7 @@ async function up(force)
 
 }
 
-async function customize(name)
+async function customize(name, bridgeAdapter, sharedFolder)
 {
     console.log(chalk.keyword('pink')(`Running VM customizations...`));
 
@@ -103,8 +110,15 @@ async function customize(name)
     // Add a port forward from 8080 => 9000 for a node application
     await VBoxManage.execute("modifyvm", `${name} --natpf1 "node,tcp,,8080,,9000"`);
 
-    // Add a NIC with bridged networking
-    await VBoxManage.execute("modifyvm", `${name} --nic2 bridged --nictype2 virtio --bridgeadapter2 wlp2s0`);
+    if (bridgeAdapter) {
+        // Extra: Add a NIC with bridged networking
+        await VBoxManage.execute("modifyvm", `${name} --nic2 bridged --nictype2 virtio --bridgeadapter2 ${bridgeAdapter}`);
+    }
+
+    if (sharedFolder) {
+        // Extra: Add a shared folder
+        await VBoxManage.execute("sharedfolder", `add ${name} --name hostdata --hostpath ${sharedFolder} --automount`);
+    }
 }
 
 async function postconfiguration(name)
