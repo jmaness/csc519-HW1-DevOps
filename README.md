@@ -2,7 +2,7 @@
 Provisions a VM with a variety of networking and shared folder configurations.
 
 # Screencast
- (Requires NCSU credentials)
+https://drive.google.com/open?id=15wp0NIGsYC2W1-ty_81pfBAa_sWRagQO (Requires NCSU credentials)
 
 # Steps
 
