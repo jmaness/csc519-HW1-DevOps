@@ -1,10 +1,10 @@
-= HW1-DevOps =
+# HW1-DevOps
 Provisions a VM with a variety of networking and shared folder configurations.
 
-= Screencast =
+# Screencast
  (Requires NCSU credentials)
 
-= Steps =
+# Steps
 
 ```
 git clone git@github.ncsu.edu:jwmanes2/HW1-DevOps.git
@@ -13,7 +13,7 @@ npm install
 npm link
 ```
 
-= Provisioning VM = 
+# Provisioning VM 
 To provision a VM, run the following command. Optionally, you can: 
 
 1. Specify a host network adapter name with the `--bridgeadapter <adapter>` (or `-b <adapter>`) argument to configure a second NIC configured with bridged networking.
@@ -25,7 +25,7 @@ v up [--bridgeadapter | -b <adapter>] [-sharedfolder | -s <path>]
 v ssh
 ```
 
-= Evaluation =
+# Evaluation
 
 - [x] Compete VM setup (40)
     - [x] Add a NIC with NAT networking.
